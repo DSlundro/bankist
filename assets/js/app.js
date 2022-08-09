@@ -75,11 +75,12 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
 
+/* CREATE DOM ELEMENTS */
 const displayMovements = movements =>{
   containerMovements.innerHTML = ''
 
   movements.forEach((mov, i)=>{
-const type = mov > 0 ? 'deposit' : 'withdrawal'
+  const type = mov > 0 ? 'deposit' : 'withdrawal'
 
     const html = ` 
     <div class="movements__row">
@@ -91,5 +92,10 @@ const type = mov > 0 ? 'deposit' : 'withdrawal'
   });
 };
 displayMovements(account1.movements)
+
+/* CREATE USERNAME */
+const createUsernames = accs => accs.forEach(acc => acc.username = acc.owner.toLowerCase().split(' ').map(e => e[0]).join(''))
+createUsernames(accounts)
+
 
 
