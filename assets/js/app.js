@@ -118,17 +118,38 @@ const calcDisplaySummary = account =>{
 }
 
 /* CALCULATE BALANCE */
-const calcDisplayBalance = movs => {
-  const balance = movs.reduce((acc, mov) => acc + mov, 0)
-  labelBalance.textContent = `${balance}€`
+const calcDisplayBalance = account => {
+  account.balance = account.movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${account.balance}€`
 
 }
 
+/* UPDATE UI */
+const updateUI = (acc) => {
+  // Display movements
+  displayMovements(acc.movements);
+  // Display balance
+  calcDisplayBalance(acc);
+  // Display summary
+  calcDisplaySummary(acc);
+}
 
+/* CLEAR INPUTS */
+const clearInput = (x, y) =>{
+  x.value = y.value = ''
+  //inputLoginUsername.value = inputLoginPin.value = ''
+}
 
+/* FOCUS OUT INPUTS */
+const focusOutInput = (x, y) =>{
+    x.blur();
+    y.blur();
+}
+
+/* LOGIN SISTEM */
 let currentAccount;
 
-btnLogin.addEventListener('click', (e) => {
+btnLogin.addEventListener('click', e => {
   // prevent submit
   e.preventDefault();
   
@@ -139,19 +160,40 @@ btnLogin.addEventListener('click', (e) => {
     labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]}`
     containerApp.style.opacity = 100;
     // Clear input fields
-    inputLoginUsername.value = inputLoginPin.value = ''
-    inputLoginPin.blur()
-    inputLoginUsername.blur()
-    // Display movements
-    displayMovements(currentAccount.movements)
-    // Display balance
-    calcDisplayBalance(currentAccount.movements)
-    // Display summary
-    calcDisplaySummary(currentAccount) 
+    clearInput(inputLoginPin, inputLoginUsername)
+    // Focus out inputs
+    focusOutInput(inputLoginPin, inputLoginUsername)
+    // Update UI
+    updateUI(currentAccount)
   }
 
 })
 
 
+/* TRANSFER MONEY */
+btnTransfer.addEventListener('click', e => {
+  e.preventDefault()
+
+  const amount = Number(inputTransferAmount.value);
+  const receiverAccount = accounts.find(acc => acc.username === inputTransferTo.value)
+
+  console.log(amount, receiverAccount);
+  if(
+    amount > 0 && 
+    receiverAccount && 
+    currentAccount.balance >= amount && 
+    receiverAccount?.username !== currentAccount.username)
+    {
+      // Doing the transfer
+      currentAccount.movements.push(-amount);
+      receiverAccount.movements.push(amount);
+      // Update UI
+      updateUI(currentAccount)
+      // Clear input fields
+      clearInput(inputTransferTo, inputTransferAmount)
+      // Focus out inputs
+      focusOutInput(inputTransferTo, inputTransferAmount)
+    }
+})
 
 
