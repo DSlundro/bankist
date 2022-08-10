@@ -82,7 +82,7 @@ const displayMovements = movements =>{
     const html = ` 
     <div class="movements__row">
       <div class="movements__type movements__type--${type}">${i+1} ${type}</div>
-      <div class="movements__value">${mov}</div>
+      <div class="movements__value">${mov}€</div>
     </div>
     `;
     containerMovements.insertAdjacentHTML('afterbegin', html)
@@ -90,19 +90,54 @@ const displayMovements = movements =>{
 };
 displayMovements(accounts[0].movements)
 
+/* CALCULATE SUMMARY */
+const calcDisplaySummary = movs =>{
+  const incomes = movs
+  .filter(mov => mov > 0)
+  .reduce((acc, mov) => acc + mov, 0);
+  labelSumIn.textContent = `${Math.abs(incomes)}€`;
+
+  const out = movs
+  .filter(mov => mov < 0)
+  .reduce((acc, mov) => acc + mov, 0);
+  labelSumOut.textContent = `${Math.abs(out)}€`;
+
+  const interest = movs
+  .filter(mov => mov > 0)
+  .map(dep => dep * 1.2/100)
+  .reduce((acc, mov) => acc + mov, 0);
+  labelSumInterest.textContent = `${interest}€`
+}
+calcDisplaySummary(accounts[0].movements) 
+
 /* CALCULATE BALANCE */
 const calcDisplayBalance = () => {
   const balance = movements.reduce((acc, mov) => acc + mov, 0)
-  return labelBalance.textContent = `${balance}€`
+  labelBalance.textContent = `${balance}€`
 
 }
 calcDisplayBalance(accounts[0].movements)
 
 /* CREATE USERNAME */
-const createUsernames = accs => accs.forEach(acc => acc.username = acc.owner.toLowerCase().split(' ').map(e => e[0]).join(''))
+const createUsernames = accs => 
+  accs
+  .forEach(acc => acc.username = acc.owner
+    .toLowerCase()
+    .split(' ')
+    .map(e => e[0])
+    .join(''))
 createUsernames(accounts)
 
-const max = movements.reduce((acc, mov) => acc > mov ? acc : mov, movements[0])
-console.log(max);
-
+/* CALCULATE TOTAL IN/OUT in $ */
+const eurToUsd = 1.1
+const totalDepositsUSD = Number(movements
+  .filter(mov => mov > 0)
+  .map(mov => mov * eurToUsd)
+  .reduce((acc, mov) => acc + mov, 0)
+  .toFixed())
+const totalWithdrawalUSD = Number(movements
+  .filter(mov => mov < 0)
+  .map(mov => mov * eurToUsd)
+  .reduce((acc, mov) => acc + mov, 0)
+  .toFixed())
 
