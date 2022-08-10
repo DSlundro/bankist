@@ -72,9 +72,9 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
 /* CREATE USERNAME */
-const createUsernames = accs => 
-  accs
-  .forEach(acc => acc.username = acc.owner
+const createUsernames = accounts => 
+  accounts
+  .forEach(account => account.username = account.owner
     .toLowerCase()
     .split(' ')
     .map(e => e[0])
@@ -125,20 +125,17 @@ const calcDisplayBalance = account => {
 }
 
 /* UPDATE UI */
-const updateUI = (acc) => {
+const updateUI = (account) => {
   // Display movements
-  displayMovements(acc.movements);
+  displayMovements(account.movements);
   // Display balance
-  calcDisplayBalance(acc);
+  calcDisplayBalance(account);
   // Display summary
-  calcDisplaySummary(acc);
+  calcDisplaySummary(account);
 }
 
 /* CLEAR INPUTS */
-const clearInput = (x, y) =>{
-  x.value = y.value = ''
-  //inputLoginUsername.value = inputLoginPin.value = ''
-}
+const clearInput = (x, y) => x.value = y.value = ''
 
 /* FOCUS OUT INPUTS */
 const focusOutInput = (x, y) =>{
@@ -148,7 +145,6 @@ const focusOutInput = (x, y) =>{
 
 /* LOGIN SISTEM */
 let currentAccount;
-
 btnLogin.addEventListener('click', e => {
   // prevent submit
   e.preventDefault();
@@ -169,7 +165,6 @@ btnLogin.addEventListener('click', e => {
 
 })
 
-
 /* TRANSFER MONEY */
 btnTransfer.addEventListener('click', e => {
   e.preventDefault()
@@ -177,7 +172,6 @@ btnTransfer.addEventListener('click', e => {
   const amount = Number(inputTransferAmount.value);
   const receiverAccount = accounts.find(acc => acc.username === inputTransferTo.value)
 
-  console.log(amount, receiverAccount);
   if(
     amount > 0 && 
     receiverAccount && 
@@ -195,5 +189,25 @@ btnTransfer.addEventListener('click', e => {
       focusOutInput(inputTransferTo, inputTransferAmount)
     }
 })
+
+/* DELETE ACCOUNT */
+btnClose.addEventListener('click', e => {
+  e.preventDefault()
+
+  if(
+    inputCloseUsername.value === currentAccount.username && 
+    Number(inputClosePin.value) === currentAccount.pin)
+    {
+      const index = accounts.findIndex(acc => acc.username === currentAccount.username);
+      // Delete account
+      accounts.splice(index, 1)
+      // Hide UI
+      containerApp.style.opacity = 0;
+    }
+  // Clear input fields
+  clearInput(inputClosePin, inputCloseUsername)
+})
+
+
 
 
