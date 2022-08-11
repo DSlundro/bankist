@@ -78,8 +78,8 @@ const createUsernames = accounts =>
     .toLowerCase()
     .split(' ')
     .map(e => e[0])
-    .join(''))
-createUsernames(accounts)
+    .join(''));
+createUsernames(accounts);
 
 /* CREATE DOM ELEMENTS */
 const displayMovements = (movements, sort = false) =>{
@@ -116,15 +116,15 @@ const calcDisplaySummary = account =>{
   .filter(mov => mov > 0)
   .map(dep => dep * account.interestRate/100)
   .reduce((acc, mov) => acc + mov, 0);
-  labelSumInterest.textContent = `${interest}€`
-}
+  labelSumInterest.textContent = `${interest.toFixed(2)}€`
+};
 
 /* CALCULATE BALANCE */
 const calcDisplayBalance = account => {
   account.balance = account.movements.reduce((acc, mov) => acc + mov, 0);
   labelBalance.textContent = `${account.balance}€`;
 
-}
+};
 
 /* UPDATE UI */
 const updateUI = (account) => {
@@ -134,19 +134,19 @@ const updateUI = (account) => {
   calcDisplayBalance(account);
   // Display summary
   calcDisplaySummary(account);
-}
+};
 
 /* CLEAR INPUTS */
 const clearInput = (x, y) => {
   x.value = ''; 
   y.value = '';
-}
+};
 
 /* FOCUS OUT INPUTS */
 const focusOutInput = (x, y) =>{
     x.blur();
     y.blur();
-}
+};
 
 /* LOGIN SISTEM */
 let currentAccount;
@@ -168,7 +168,7 @@ btnLogin.addEventListener('click', e => {
     updateUI(currentAccount);
   }
 
-})
+});
 
 /* TRANSFER MONEY */
 btnTransfer.addEventListener('click', e => {
@@ -193,7 +193,7 @@ btnTransfer.addEventListener('click', e => {
       // Focus out inputs
       focusOutInput(inputTransferTo, inputTransferAmount);
     }
-})
+});
 
 /* CLOSE ACCOUNT */
 btnClose.addEventListener('click', e => {
