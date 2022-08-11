@@ -82,8 +82,10 @@ const createUsernames = accounts =>
 createUsernames(accounts)
 
 /* CREATE DOM ELEMENTS */
-const displayMovements = movs =>{
+const displayMovements = (movements, sort = false) =>{
   containerMovements.innerHTML = ''
+  // Sort
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements
 
   movs.forEach((mov, i)=>{
   const type = mov > 0 ? 'deposit' : 'withdrawal'
@@ -120,7 +122,7 @@ const calcDisplaySummary = account =>{
 /* CALCULATE BALANCE */
 const calcDisplayBalance = account => {
   account.balance = account.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${account.balance}€`
+  labelBalance.textContent = `${account.balance}€`;
 
 }
 
@@ -135,7 +137,10 @@ const updateUI = (account) => {
 }
 
 /* CLEAR INPUTS */
-const clearInput = (x, y) => x.value = y.value = ''
+const clearInput = (x, y) => {
+  x.value = ''; 
+  y.value = '';
+}
 
 /* FOCUS OUT INPUTS */
 const focusOutInput = (x, y) =>{
@@ -149,18 +154,18 @@ btnLogin.addEventListener('click', e => {
   // prevent submit
   e.preventDefault();
   
-  currentAccount = accounts.find(acc => acc.username === inputLoginUsername.value)
+  currentAccount = accounts.find(acc => acc.username === inputLoginUsername.value);
 
   if(currentAccount?.pin === Number(inputLoginPin.value)){
     // Display UI and message
-    labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]}`
+    labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]}`;
     containerApp.style.opacity = 100;
     // Clear input fields
-    clearInput(inputLoginPin, inputLoginUsername)
+    clearInput(inputLoginPin, inputLoginUsername);
     // Focus out inputs
-    focusOutInput(inputLoginPin, inputLoginUsername)
+    focusOutInput(inputLoginPin, inputLoginUsername);
     // Update UI
-    updateUI(currentAccount)
+    updateUI(currentAccount);
   }
 
 })
@@ -170,7 +175,7 @@ btnTransfer.addEventListener('click', e => {
   e.preventDefault()
 
   const amount = Number(inputTransferAmount.value);
-  const receiverAccount = accounts.find(acc => acc.username === inputTransferTo.value)
+  const receiverAccount = accounts.find(acc => acc.username === inputTransferTo.value);
 
   if(
     amount > 0 && 
@@ -182,15 +187,15 @@ btnTransfer.addEventListener('click', e => {
       currentAccount.movements.push(-amount);
       receiverAccount.movements.push(amount);
       // Update UI
-      updateUI(currentAccount)
+      updateUI(currentAccount);
       // Clear input fields
-      clearInput(inputTransferTo, inputTransferAmount)
+      clearInput(inputTransferTo, inputTransferAmount);
       // Focus out inputs
-      focusOutInput(inputTransferTo, inputTransferAmount)
+      focusOutInput(inputTransferTo, inputTransferAmount);
     }
 })
 
-/* DELETE ACCOUNT */
+/* CLOSE ACCOUNT */
 btnClose.addEventListener('click', e => {
   e.preventDefault()
 
@@ -200,14 +205,36 @@ btnClose.addEventListener('click', e => {
     {
       const index = accounts.findIndex(acc => acc.username === currentAccount.username);
       // Delete account
-      accounts.splice(index, 1)
+      accounts.splice(index, 1);
       // Hide UI
       containerApp.style.opacity = 0;
     }
   // Clear input fields
-  clearInput(inputClosePin, inputCloseUsername)
-})
+  clearInput(inputClosePin, inputCloseUsername);
+});
 
+/* REQUEST LOAN */
+btnLoan.addEventListener('click', e => {
+  e.preventDefault();
 
+  const amount = Number(inputLoanAmount.value);
+  // il prestito viene concesso solo se c'è un deposito maggiore o uguale al 10% dell'importo del prestito richiesto
+  if(amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)){
+      // Add movement
+      currentAccount.movements.push(amount);
+      // Update UI
+      updateUI(currentAccount);
+    };
+  clearInput(inputLoanAmount);
+});
+
+/* SORT ASCENDING */
+let sorted = false
+btnSort.addEventListener('click', e => {
+  e.preventDefault();
+  // Sort
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted
+});
 
 
