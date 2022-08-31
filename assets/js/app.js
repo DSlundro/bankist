@@ -23,6 +23,7 @@ const accounts = [
       '2019-11-25T21:31:17.178Z',
     ],
     locale: 'en-US',
+    currency: 'USD',
   },
   {
     owner: 'Jessica Davis',
@@ -41,6 +42,7 @@ const accounts = [
       '2019-10-25T21:31:17.178Z',
     ],
     locale: 'en-UK',
+    currency: 'GBP',
   },
   {
     owner: 'Steven Thomas Williams',
@@ -59,6 +61,7 @@ const accounts = [
       '2019-09-25T21:31:17.178Z',
     ],
     locale: 'pt-PT',
+    currency: 'EUR',
   },
   {
     owner: 'Sarah Smith',
@@ -77,6 +80,7 @@ const accounts = [
       '2019-05-25T21:31:17.178Z',
     ],
     locale: 'it-IT',
+    currency: 'EUR',
   },
 ];
 
@@ -150,6 +154,14 @@ const createUsernames = accounts =>
     .join(''));
 createUsernames(accounts);
 
+// FORMATING CURRENCIES
+const formatCurrency = (value, locale, currency) =>{
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+  }).format(value)
+}
+
 /* CREATE DOM ELEMENTS */
 const displayMovements = (acc, sort = false) =>{
   containerMovements.innerHTML = ''
@@ -162,12 +174,12 @@ const displayMovements = (acc, sort = false) =>{
     // Transition date
     const date = new Date(acc.movementsDates[i])
     const displayDate = formatMovementDate(date, acc.locale)
-    
+
     const html = ` 
     <div class="movements__row">
       <div class="movements__type movements__type--${type}">${i+1} ${type}</div>
       <div class="movements__date">${displayDate}</div>
-      <div class="movements__value">${mov}€</div>
+      <div class="movements__value">${formatCurrency(mov, acc.locale, acc.currency)}</div>
     </div>
     `;
     containerMovements.insertAdjacentHTML('afterbegin', html)
@@ -179,24 +191,24 @@ const calcDisplaySummary = account =>{
   const incomes = account.movements
   .filter(mov => mov > 0)
   .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${Math.abs(incomes)}€`;
+  labelSumIn.textContent = `${(formatCurrency(Math.abs(incomes), account.locale, account.currency))}`;
 
   const out = account.movements
   .filter(mov => mov < 0)
   .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(out)}€`;
+  labelSumOut.textContent = `${(formatCurrency(Math.abs(out), account.locale, account.currency))}`;
 
   const interest = account.movements
   .filter(mov => mov > 0)
   .map(dep => dep * account.interestRate/100)
   .reduce((acc, mov) => acc + mov, 0);
-  labelSumInterest.textContent = `${interest.toFixed(2)}€`
+  labelSumInterest.textContent = `${formatCurrency(Number(interest.toFixed(2)), account.locale, account.currency)}€`
 };
 
 /* CALCULATE BALANCE */
 const calcDisplayBalance = account => {
   account.balance = account.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${account.balance}€`;
+  labelBalance.textContent = `${formatCurrency(account.balance, account.locale, account.currency)}`;
 
 };
 
