@@ -11,24 +11,68 @@ const accounts = [
     movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
     interestRate: 1.2, // %
     pin: 1111,
+    movementsDates: 
+    [
+      '2019-11-18T21:31:17.178Z',
+      '2019-11-19T21:31:17.178Z',
+      '2019-11-20T21:31:17.178Z',
+      '2019-11-21T21:31:17.178Z',
+      '2019-11-22T21:31:17.178Z',
+      '2019-11-23T21:31:17.178Z',
+      '2019-11-24T21:31:17.178Z',
+      '2019-11-25T21:31:17.178Z',
+    ],
   },
   {
     owner: 'Jessica Davis',
     movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
     interestRate: 1.5,
     pin: 2222,
+    movementsDates: 
+    [
+      '2019-10-18T21:31:17.178Z',
+      '2019-10-19T21:31:17.178Z',
+      '2019-10-20T21:31:17.178Z',
+      '2019-10-21T21:31:17.178Z',
+      '2019-10-22T21:31:17.178Z',
+      '2019-10-23T21:31:17.178Z',
+      '2019-10-24T21:31:17.178Z',
+      '2019-10-25T21:31:17.178Z',
+    ],
   },
   {
     owner: 'Steven Thomas Williams',
     movements: [200, -200, 340, -300, -20, 50, 400, -460],
     interestRate: 0.7,
     pin: 3333,
+    movementsDates: 
+    [
+      '2019-09-18T21:31:17.178Z',
+      '2019-09-19T21:31:17.178Z',
+      '2019-09-20T21:31:17.178Z',
+      '2019-09-21T21:31:17.178Z',
+      '2019-09-22T21:31:17.178Z',
+      '2019-09-23T21:31:17.178Z',
+      '2019-09-24T21:31:17.178Z',
+      '2019-09-25T21:31:17.178Z',
+    ],
   },
   {
     owner: 'Sarah Smith',
     movements: [430, 1000, 700, 50, 90],
     interestRate: 1,
     pin: 4444,
+    movementsDates: 
+    [
+      '2019-05-18T21:31:17.178Z',
+      '2019-05-19T21:31:17.178Z',
+      '2019-05-20T21:31:17.178Z',
+      '2019-05-21T21:31:17.178Z',
+      '2019-05-22T21:31:17.178Z',
+      '2019-05-23T21:31:17.178Z',
+      '2019-05-24T21:31:17.178Z',
+      '2019-05-25T21:31:17.178Z',
+    ],
   },
 ];
 
@@ -71,6 +115,27 @@ const currencies = new Map([
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
+const formatMovementDate = date => {
+  const calcDaysPassed = (date1, date2) => Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24))
+
+  const daysPassed = calcDaysPassed(new Date(), date)
+  console.log(daysPassed);
+
+  if (daysPassed === 0) return 'Today'
+  if (daysPassed === 1) return 'Yesterday'
+  if (daysPassed <= 7) return `${daysPassed} days ago`
+  else{
+    const day = `${date.getDate()}`.padStart(2,0);
+    const month = `${date.getMonth() + 1}`.padStart(2,0);
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`
+
+  }
+
+
+
+}
+
 /* CREATE USERNAME */
 const createUsernames = accounts => 
   accounts
@@ -82,17 +147,22 @@ const createUsernames = accounts =>
 createUsernames(accounts);
 
 /* CREATE DOM ELEMENTS */
-const displayMovements = (movements, sort = false) =>{
+const displayMovements = (acc, sort = false) =>{
   containerMovements.innerHTML = ''
   // Sort
-  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements
+  const movs = sort ? acc.movements.slice().sort((a, b) => a - b) : acc.movements
 
   movs.forEach((mov, i)=>{
-  const type = mov > 0 ? 'deposit' : 'withdrawal'
+    const type = mov > 0 ? 'deposit' : 'withdrawal'
 
+    // Transition date
+    const date = new Date(acc.movementsDates[i])
+    const displayDate = formatMovementDate(date)
+    
     const html = ` 
     <div class="movements__row">
       <div class="movements__type movements__type--${type}">${i+1} ${type}</div>
+      <div class="movements__date">${displayDate}</div>
       <div class="movements__value">${mov}€</div>
     </div>
     `;
@@ -129,7 +199,7 @@ const calcDisplayBalance = account => {
 /* UPDATE UI */
 const updateUI = (account) => {
   // Display movements
-  displayMovements(account.movements);
+  displayMovements(account);
   // Display balance
   calcDisplayBalance(account);
   // Display summary
@@ -160,6 +230,14 @@ btnLogin.addEventListener('click', e => {
     // Display UI and message
     labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]}`;
     containerApp.style.opacity = 100;
+    // Create current date and time
+    const now = new Date();
+    const day = `${now.getDate()}`.padStart(2,0);
+    const month = `${now.getMonth() + 1}`.padStart(2,0);
+    const year = now.getFullYear();
+    const hour = `${now.getHours()}`.padStart(2,0);
+    const min = `${now.getMinutes()}`.padStart(2,0);
+    labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`
     // Clear input fields
     clearInput(inputLoginPin, inputLoginUsername);
     // Focus out inputs
@@ -169,6 +247,12 @@ btnLogin.addEventListener('click', e => {
   }
 
 });
+
+/* FAKE ALWAYS LOGGED IN */
+currentAccount = accounts[0];
+updateUI(currentAccount);
+containerApp.style.opacity = 100;
+
 
 /* TRANSFER MONEY */
 btnTransfer.addEventListener('click', e => {
@@ -186,6 +270,9 @@ btnTransfer.addEventListener('click', e => {
       // Doing the transfer
       currentAccount.movements.push(-amount);
       receiverAccount.movements.push(amount);
+      // Add transfer date
+      currentAccount.movementsDates.push(new Date().toISOString())
+      receiverAccount.movementsDates.push(new Date().toISOString())
       // Update UI
       updateUI(currentAccount);
       // Clear input fields
@@ -222,6 +309,8 @@ btnLoan.addEventListener('click', e => {
   if(amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)){
       // Add movement
       currentAccount.movements.push(amount);
+      // Add transfer date
+      currentAccount.movementsDates.push(new Date().toISOString())
       // Update UI
       updateUI(currentAccount);
     };
