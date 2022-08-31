@@ -294,7 +294,8 @@ btnTransfer.addEventListener('click', e => {
     currentAccount.balance >= amount && 
     receiverAccount?.username !== currentAccount.username)
     {
-      // Doing the transfer
+      setTimeout(()=>{
+        // Doing the transfer
       currentAccount.movements.push(-amount);
       receiverAccount.movements.push(amount);
       // Add transfer date
@@ -306,6 +307,7 @@ btnTransfer.addEventListener('click', e => {
       clearInput(inputTransferTo, inputTransferAmount);
       // Focus out inputs
       focusOutInput(inputTransferTo, inputTransferAmount);
+      },1000)
     }
 });
 
@@ -334,12 +336,14 @@ btnLoan.addEventListener('click', e => {
   const amount = Number(inputLoanAmount.value);
   // il prestito viene concesso solo se c'è un deposito maggiore o uguale al 10% dell'importo del prestito richiesto
   if(amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)){
-      // Add movement
+      setTimeout(()=>{
+        // Add movement
       currentAccount.movements.push(amount);
       // Add transfer date
       currentAccount.movementsDates.push(new Date().toISOString())
       // Update UI
       updateUI(currentAccount);
+      }, 2500)
     };
   clearInput(inputLoanAmount);
 });
