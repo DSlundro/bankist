@@ -22,6 +22,7 @@ const accounts = [
       '2019-11-24T21:31:17.178Z',
       '2019-11-25T21:31:17.178Z',
     ],
+    locale: 'en-US',
   },
   {
     owner: 'Jessica Davis',
@@ -39,6 +40,7 @@ const accounts = [
       '2019-10-24T21:31:17.178Z',
       '2019-10-25T21:31:17.178Z',
     ],
+    locale: 'en-UK',
   },
   {
     owner: 'Steven Thomas Williams',
@@ -56,6 +58,7 @@ const accounts = [
       '2019-09-24T21:31:17.178Z',
       '2019-09-25T21:31:17.178Z',
     ],
+    locale: 'pt-PT',
   },
   {
     owner: 'Sarah Smith',
@@ -73,6 +76,7 @@ const accounts = [
       '2019-05-24T21:31:17.178Z',
       '2019-05-25T21:31:17.178Z',
     ],
+    locale: 'it-IT',
   },
 ];
 
@@ -115,7 +119,7 @@ const currencies = new Map([
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
-const formatMovementDate = date => {
+const formatMovementDate = (date, locale) => {
   const calcDaysPassed = (date1, date2) => Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24))
 
   const daysPassed = calcDaysPassed(new Date(), date)
@@ -125,11 +129,11 @@ const formatMovementDate = date => {
   if (daysPassed === 1) return 'Yesterday'
   if (daysPassed <= 7) return `${daysPassed} days ago`
   else{
-    const day = `${date.getDate()}`.padStart(2,0);
+    /* const day = `${date.getDate()}`.padStart(2,0);
     const month = `${date.getMonth() + 1}`.padStart(2,0);
     const year = date.getFullYear();
-    return `${day}/${month}/${year}`
-
+    return `${day}/${month}/${year}` */
+    return new Intl.DateTimeFormat(locale).format(date)
   }
 
 
@@ -157,7 +161,7 @@ const displayMovements = (acc, sort = false) =>{
 
     // Transition date
     const date = new Date(acc.movementsDates[i])
-    const displayDate = formatMovementDate(date)
+    const displayDate = formatMovementDate(date, acc.locale)
     
     const html = ` 
     <div class="movements__row">
@@ -232,12 +236,23 @@ btnLogin.addEventListener('click', e => {
     containerApp.style.opacity = 100;
     // Create current date and time
     const now = new Date();
-    const day = `${now.getDate()}`.padStart(2,0);
+    const options = {
+      hour: 'numeric',
+      minute: 'numeric',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      weekday: 'long',
+    }
+    const locale = navigator.language;
+    labelDate.textContent = new Intl.DateTimeFormat(locale, options).format(now)
+
+    /* const day = `${now.getDate()}`.padStart(2,0);
     const month = `${now.getMonth() + 1}`.padStart(2,0);
     const year = now.getFullYear();
     const hour = `${now.getHours()}`.padStart(2,0);
     const min = `${now.getMinutes()}`.padStart(2,0);
-    labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`
+    labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}` */
     // Clear input fields
     clearInput(inputLoginPin, inputLoginUsername);
     // Focus out inputs
