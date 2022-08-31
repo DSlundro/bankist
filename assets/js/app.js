@@ -234,8 +234,32 @@ const focusOutInput = (x, y) =>{
     y.blur();
 };
 
+/* LOGOUT TIMER */
+const startLogOutTimer = () => {
+  const trick = () => {
+    const min = String(Math.trunc(time / 60)).padStart(2,0);
+    const sec = String(time % 60).padStart(2,0);
+    // In each call, print the remaining time to UI
+    labelTimer.textContent = `${min}:${sec}`; 
+    // When 0 seconds, stop timer and log out user
+    if(time === 0){
+      clearInterval(timer);
+      labelWelcome.textContent = `Log in to get started`;
+      containerApp.style.opacity = 0;
+    }
+    // Decrease 1s
+    time--;
+  };
+  // Set time to 5 minutes
+  let time = 300;
+  // Call the timer every seconds
+  trick()
+  const timer = setInterval(trick, 1000);
+  return timer;
+};
+
 /* LOGIN SISTEM */
-let currentAccount;
+let currentAccount, timer;
 btnLogin.addEventListener('click', e => {
   // prevent submit
   e.preventDefault();
@@ -269,6 +293,9 @@ btnLogin.addEventListener('click', e => {
     clearInput(inputLoginPin, inputLoginUsername);
     // Focus out inputs
     focusOutInput(inputLoginPin, inputLoginUsername);
+    // Logout timer
+    if(timer) clearInterval(timer);
+    timer = startLogOutTimer();
     // Update UI
     updateUI(currentAccount);
   }
@@ -276,9 +303,9 @@ btnLogin.addEventListener('click', e => {
 });
 
 /* FAKE ALWAYS LOGGED IN */
-currentAccount = accounts[0];
+/* currentAccount = accounts[0];
 updateUI(currentAccount);
-containerApp.style.opacity = 100;
+containerApp.style.opacity = 100; */
 
 
 /* TRANSFER MONEY */
