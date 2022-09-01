@@ -127,7 +127,7 @@ const formatMovementDate = (date, locale) => {
   const calcDaysPassed = (date1, date2) => Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24))
 
   const daysPassed = calcDaysPassed(new Date(), date)
-  console.log(daysPassed);
+  //console.log(daysPassed);
 
   if (daysPassed === 0) return 'Today'
   if (daysPassed === 1) return 'Yesterday'
@@ -166,6 +166,7 @@ const formatCurrency = (value, locale, currency) =>{
 const displayMovements = (acc, sort = false) =>{
   containerMovements.innerHTML = ''
   // Sort
+  console.log(acc.movements);
   const movs = sort ? acc.movements.slice().sort((a, b) => a - b) : acc.movements
 
   movs.forEach((mov, i)=>{
@@ -302,10 +303,6 @@ btnLogin.addEventListener('click', e => {
 
 });
 
-/* FAKE ALWAYS LOGGED IN */
-/* currentAccount = accounts[0];
-updateUI(currentAccount);
-containerApp.style.opacity = 100; */
 
 
 /* TRANSFER MONEY */
@@ -380,7 +377,7 @@ let sorted = false
 btnSort.addEventListener('click', e => {
   e.preventDefault();
   // Sort
-  displayMovements(currentAccount.movements, !sorted);
+  displayMovements(currentAccount, !sorted);
   sorted = !sorted
 });
 
