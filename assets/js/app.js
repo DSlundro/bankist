@@ -166,7 +166,6 @@ const formatCurrency = (value, locale, currency) =>{
 const displayMovements = (acc, sort = false) =>{
   containerMovements.innerHTML = ''
   // Sort
-  console.log(acc.movements);
   const movs = sort ? acc.movements.slice().sort((a, b) => a - b) : acc.movements
 
   movs.forEach((mov, i)=>{
